@@ -1,0 +1,14 @@
+{
+  "name": "xf-voice-dictation-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@muguilin/xf-voice-dictation": "^1.0.1"
+  }
+}

@@ -1,15 +1,19 @@
 ; (function (window, voice) {
     "use strict";
+    // 根据不同的环境将 Voice 相关的模块暴露出去，以供其他模块或文件使用。
     if (typeof define === 'function' && define.amd) {
+        // 判断当前环境是否支持 AMD 模块定义，如果支持，则通过 define 方法将 voice 模块暴露出去。
         define(voice);
     } else if (typeof exports === 'object') {
+        // 如果当前环境是 Node.js 环境，判断是否存在 exports 对象，如果存在则通过 module.exports 导出 voice 模块。
         module.exports = voice();
     } else {
+        // 如果以上两种情况都不符合，就将 voice 模块挂载到全局对象 window 下的 XfVoiceDictation 属性上。
         window.XfVoiceDictation = voice();
     };
-}(typeof window !== "undefined" ? window : this, () => {
+}(typeof window !== "undefined" ? window : this/**同样也是为了区分不同环境 */, () => {
     "use strict";
-    return class IatRecorder {
+    return class IatRecorder {/**返回一个类 */
         constructor(opts = {}) {
             // 服务接口认证信息(语音听写（流式版）WebAPI)
             this.APPID = opts.APPID || '';
@@ -21,13 +25,13 @@
             this.host = opts.host || "iat-api.xfyun.cn";
 
             // 识别监听方法
-            this.onTextChange = opts.onTextChange || Function();
-            this.onWillStatusChange = opts.onWillStatusChange || Function();
+            this.onTextChange = opts.onTextChange || Function();/** 监听识别结果的变化回调 */
+            this.onWillStatusChange = opts.onWillStatusChange || Function();/** 监听录音状态变化回调  status：null | init | ing | end */
            
             // 方言/语种
             this.status = 'null'
             this.language = opts.language || 'zh_cn'
-            this.accent = opts.accent || 'mandarin';
+            this.accent = opts.accent || 'mandarin';/** 方言：中文普通话 */
             
             // 流媒体
             this.streamRef = [];
@@ -118,7 +122,7 @@
         connectWebSocket() {
             return this.getWebSocketUrl().then(url => {
                 let iatWS;
-                if ('WebSocket' in window) {
+                if ('WebSocket' in window) {/** 如果指定的属性在指定的对象或其原型链中，则 in 运算符返回 true。 */
                     iatWS = new WebSocket(url);
                 } else if ('MozWebSocket' in window) {
                     iatWS = new MozWebSocket(url);
@@ -151,7 +155,7 @@
             // 创建音频环境
             try {
                 this.audioContext = this.audioContext ? this.audioContext : new (window.AudioContext || window.webkitAudioContext)();
-                this.audioContext.resume();
+                this.audioContext.resume();/**AudioContext 的 resume() 方法，恢复之前暂停播放的音频。 */
                 if (!this.audioContext) {
                     alert('浏览器不支持webAudioApi相关接口');
                     return false;
@@ -222,10 +226,10 @@
         };
         // 向webSocket发送数据(音频二进制数据经过Base64处理)
         webSocketSend() {
-            if (this.webSocket.readyState !== 1) return false;
+            if (this.webSocket.readyState/** CONNECTING:0、OPEN:1、CLOSING:2、CLOSED:3 */ !== 1) return false;
             // 音频数据
-            const audioData = this.audioData.splice(0, 1280);
-            const params = {
+            const audioData = this.audioData.splice(0, 1280);/** web work 发送的音频数据 */
+            const params = {/**讯飞实时转写要求的格式 */
                 common: {
                     app_id: this.APPID,
                 },
@@ -320,7 +324,7 @@
         };
         // 启动录音
         recorderStart() {
-            if (!this.audioContext) {
+            if (!this.audioContext) {/** 如果初始有音频数据的话就初始化浏览器录音*/
                 this.recorderInit();
             } else {
                 this.audioContext.resume();
