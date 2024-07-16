@@ -76,13 +76,14 @@
         };
 
         // 操作初始化
+        /** 初始化一个 Worker ，并在 onmessage 事件中拿到转换后的音频数据 */
         init() {
             const self = this;
             try {
                 if (!self.APPID || !self.APIKey || !self.APISecret) {
                     alert('请正确配置【迅飞语音听写（流式版）WebAPI】服务接口认证信息！');
                 } else {
-                    self.webWorker = new Worker('./js/transcode.worker.js');
+                    self.webWorker = new Worker('./js/transcode.worker.js');/** 为什么是 ./js/transcode.worker.js 而非 ./transcode.worker.js ？ */
                     self.webWorker.onmessage = function (event) {
                         self.audioData.push(...event.data);
                     };
